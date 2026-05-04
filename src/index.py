@@ -20,7 +20,7 @@ def load_pages():
         for line in f:
             pages.append(json.loads(line))
     return pages
-
+# Utile pour réutiliser le fichier autre part
 def main():
 
     # Sécurité si pas de fichier JSON trouvé
@@ -56,19 +56,22 @@ def main():
     collection = client.create_collection(name=COLLECTION_NAME)
 
     print("Creating embeddings and indexing...")
-
+    
+    # Compromis standard entre rapidité et besoin mémoire, puissance de 2 (2^6) + facile pour GPU /CPU 
     batch_size = 64
 
     for i in range(0, len(pages), batch_size):
 
+        # Slicing
         batch = pages[i:i+batch_size]
 
         texts = [p["text"] for p in batch]
-        embeddings = model.encode(texts).tolist()
+        embeddings = model.encode(texts).tolist() #encode renvoie un numpy array convertit en liste python avec tolist
 
-        ids = [f'{p["doc"]}::p{p["page"]}' for p in batch]
+        ids = [f'{p["doc"]}::p{p["page"]}' for p in batch] # "::" pour faciliter le découpage plutôt que "-"
         metadatas = [{"doc": p["doc"], "page": p["page"]} for p in batch]
 
+        # Ajout dans la base vect.
         collection.add(
             ids=ids,
             documents=texts,
