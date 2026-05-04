@@ -3,8 +3,11 @@ venv/
 .env
 
 # Data
-data/processed/
-data/raw_pdf/
+data/processed/*
+data/raw_pdf/*
+# On prends les gitkeep
+!data/processed/.gitkeep
+!data/raw_pdf/.gitkeep
 
 # Python cache
 __pycache__/
